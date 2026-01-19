@@ -19,7 +19,7 @@ app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
 
 //Allow multiple origins
 const allowedOrigins = [
-    // 'http://localhost:5173', 
+    'http://localhost:5173', 
     'https://stanveeproducts.vercel.app'
     
 ];

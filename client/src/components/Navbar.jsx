@@ -194,7 +194,7 @@ const Navbar = () => {
 
         {/* Mobile Search Input */}
         {mobileSearchOpen && (
-          <div className="md:hidden px-4 pb-2 relative">
+          <div className="md:hidden px-4 pb-2 relative w-[200px]">
             <input
               value={typeof searchQuery === "string" ? searchQuery : ""}
               onChange={(e) => {
