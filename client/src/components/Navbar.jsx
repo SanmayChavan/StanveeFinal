@@ -66,7 +66,7 @@ const Navbar = () => {
         // Reset all auth-related states
         setUser(null);
         // setIsSeller(false);
-        setCartItems({});
+        // setCartItems({});
 
         navigate("/");
       }
