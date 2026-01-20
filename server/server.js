@@ -55,7 +55,6 @@
 //     console.log(`Server is running on https://localhost:${port}`)
 // })
 
-
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -68,7 +67,6 @@ import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import addressRouter from './routes/addressRoute.js';
 import orderRouter from './routes/orderRoute.js';
-import { stripeWebhooks } from './controllers/orderController.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -76,7 +74,7 @@ const port = process.env.PORT || 4000;
 // Allowed frontend origins
 const allowedOrigins = [
   'https://stanveeproducts.vercel.app',
-//   'http://localhost:5173'
+  // 'http://localhost:5173'
 ];
 
 // Middleware
@@ -84,22 +82,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS setup
+// ✅ Correct CORS setup (NO app.options)
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // allow curl, Postman, mobile apps
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
-}));
-
-// Preflight OPTIONS requests
-app.options('*', cors({
-  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -115,12 +107,9 @@ app.use('/api/cart', cartRouter);
 app.use('/api/address', addressRouter);
 app.use('/api/order', orderRouter);
 
-// Stripe webhook (optional)
-// app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
-
 app.get('/', (req, res) => res.send('API is working'));
 
 // Start server
 app.listen(port, () => {
-  console.log(`Server running on https://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
