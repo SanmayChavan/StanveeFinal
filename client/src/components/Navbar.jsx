@@ -40,16 +40,39 @@ const Navbar = () => {
     { name: "Kitchen Essentials", path: "/products/kitchenessentials" },
   ];
 
+  // const logout = async () => {
+  //   try {
+  //     const { data } = await axios.get("/api/user/logout");
+  //     if (data.success) {
+  //       toast.success(data.message);
+  //       setUser(null);
+  //       navigate("/");
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.message || "Logout failed");
+  //   }
+  // };
+
   const logout = async () => {
     try {
-      const { data } = await axios.get("/api/user/logout");
+      // Explicitly using axios.get to match your router
+      const { data } = await axios.get("/api/user/logout", {
+        withCredentials: true
+      });
+
       if (data.success) {
         toast.success(data.message);
+
+        // Reset all auth-related states
         setUser(null);
+        // setIsSeller(false);
+        setCartItems({});
+
         navigate("/");
       }
     } catch (err) {
-      toast.error(err.message || "Logout failed");
+      console.error("Logout Error:", err);
+      toast.error(err.response?.data?.message || "Logout failed");
     }
   };
 

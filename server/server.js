@@ -37,7 +37,7 @@ app.use(cookieParser());
 // Allow multiple origins
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://stanveeproducts.vercel.app'
+    // 'https://stanveeproducts.vercel.app'
 ];
 
 // Optimized Middleware Configuration
