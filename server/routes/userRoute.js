@@ -10,3 +10,4 @@ userRouter.post('/is-auth', authUser, isAuth) ;
 userRouter.get('/logout', logout) ;
 
 export default userRouter ;
+
