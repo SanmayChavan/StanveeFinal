@@ -20,7 +20,7 @@ const port = process.env.PORT || 4000;
 //Allow multiple origins
 const allowedOrigins = [
     'https://stanveeproducts.vercel.app',
-    // 'http://localhost:5173'
+    'http://localhost:5173',
 
 ];
 // 'https://greencart-flax.vercel.app'
@@ -29,6 +29,7 @@ const allowedOrigins = [
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use(cors({
     origin: allowedOrigins,
     credentials: true,
@@ -54,3 +55,4 @@ app.use('/api/order', orderRouter);
 app.listen(port, () => {
     console.log(`Server is running on https://localhost:${port}`)
 })
+
