@@ -15,23 +15,46 @@ import { stripeWebhooks } from './controllers/orderController.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
-app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
+// app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
 
-//Allow multiple origins
-const allowedOrigins = [
-    'http://localhost:5173', 
-    'https://stanveeproducts.vercel.app'
-    
-];
-// 'https://greencart-flax.vercel.app'
+// //Allow multiple origins
+// const allowedOrigins = [
+//     'http://localhost:5173', 
+//     'https://stanveeproducts.vercel.app'
+
+// ];
+// // 'https://greencart-flax.vercel.app'
 
 //Middleware Configuration
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+// app.use(cors({
+//     origin: allowedOrigins,
+//     credentials: true,
+// }));
+
+// Allow multiple origins
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://stanveeproducts.vercel.app'
+];
+
+// Optimized Middleware Configuration
 app.use(cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
