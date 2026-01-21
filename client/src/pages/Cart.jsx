@@ -105,7 +105,7 @@ const Cart = () => {
                 <div className="grid grid-cols-[2fr_1fr_1fr] text-gray-500 text-base font-medium pb-3">
                     <p className="text-left">Product Details</p>
                     <p className="text-center">Subtotal</p>
-                    <p className="text-center">Action</p>
+                    <p className="text-center">Remove</p>
                 </div>
 
                 {cartArray.map((product, index) => (
