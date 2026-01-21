@@ -24,24 +24,24 @@
 
 
 
-
 import jwt from 'jsonwebtoken';
 
 const authUser = async (req, res, next) => {
-    const token = req.cookies.token;
-    console.log("TOKEN ->", token);
-
-    if (!token) {
-        return res.json({ success: false, message: "Not authorized. Login again." });
-    }
-
     try {
+        // Get the token from cookie
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.json({ success: false, message: "Not authorized. Login again." });
+        }
+
+        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Ensure req.body exists
         if (!req.body) req.body = {};
 
-        // Attach userId to req.body (controller relies on this)
+        // Attach userId for your isAuth controller
         req.body.userId = decoded.id;
 
         next();
