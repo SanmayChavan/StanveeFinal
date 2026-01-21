@@ -19,8 +19,8 @@ const port = process.env.PORT || 4000;
 
 //Allow multiple origins
 const allowedOrigins = [
-    'http://localhost:5173',
     'https://stanveeproducts.vercel.app',
+    'http://localhost:5173',
 
 ];
 // 'https://greencart-flax.vercel.app'
