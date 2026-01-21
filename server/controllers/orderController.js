@@ -13,26 +13,116 @@ const adminEmail = "sanmaychavan22@gmail.com";
 // Place Order - COD
 // POST: /api/order/COD
 // ------------------------
+// export const placeOrderCOD = async (req, res) => {
+//   try {
+//     const { userId, items, address } = req.body;
+//     if (!address || !items || items.length === 0) {
+//       console.log("❌ Invalid data for COD order");
+//       return res.json({ success: false, message: "Invalid data" });
+//     }
+
+//     // Calculate total amount
+//     let amount = await items.reduce(async (acc, item) => {
+//       const product = await Product.findById(item.product);
+//       console.log(`📦 Adding product ${product.name} x ${item.quantity} = ${product.offerPrice * item.quantity}`);
+//       return (await acc) + product.offerPrice * item.quantity;
+//     }, 0);
+
+//     // Add 2% tax
+//     amount += Math.floor(amount * 0.02);
+//     console.log(`💰 Total amount with tax: ₹${amount}`);
+
+//     // Create order
+//     const order = await Order.create({
+//       userId,
+//       items,
+//       amount,
+//       address,
+//       paymentType: "COD",
+//     });
+//     console.log("✅ COD order created:", order._id);
+
+//     // Populate products for email
+//     await order.populate("items.product");
+
+//     // Get user info
+//     const user = await User.findById(userId);
+
+//     // Generate product HTML
+//     const productHTML = generateOrderProductsHTML(order.items);
+
+//     console.log("📧 Sending emails to user and admin...");
+//     await Promise.all([
+//       // User email
+//       sendEmail({
+//         to: user.email,
+//         subject: `Order Confirmed - #${order._id}`,
+//         html: `<h3>Hi ${user.name}</h3>
+//                <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
+//                ${productHTML}
+//                <p>Payment Type: COD</p>`,
+//       }),
+
+//       // Admin email
+//       sendEmail({
+//         to: adminEmail,
+//         subject: `New COD Order Received - #${order._id}`,
+//         html: `<h3>New COD Order Received</h3>
+//                <p>Customer: ${user.name} (${user.email})</p>
+//                <p>Order ID: ${order._id}</p>
+//                ${productHTML}`,
+//       }),
+//     ]);
+//     console.log("✅ Emails sent successfully");
+
+//     res.status(201).json({ success: true, message: "Order placed successfully", order });
+//   } catch (err) {
+//     console.error("❌ Error in placeOrderCOD:", err.message);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+
+
+
+
+
+
+
+
 export const placeOrderCOD = async (req, res) => {
   try {
     const { userId, items, address } = req.body;
-    if (!address || !items || items.length === 0) {
+
+    // ✅ Validate request data
+    if (!userId || !address || !items || items.length === 0) {
       console.log("❌ Invalid data for COD order");
-      return res.json({ success: false, message: "Invalid data" });
+      return res.status(400).json({ success: false, message: "Invalid order data" });
     }
 
-    // Calculate total amount
-    let amount = await items.reduce(async (acc, item) => {
-      const product = await Product.findById(item.product);
-      console.log(`📦 Adding product ${product.name} x ${item.quantity} = ${product.offerPrice * item.quantity}`);
-      return (await acc) + product.offerPrice * item.quantity;
-    }, 0);
+    // ✅ Fetch all products in one query
+    const productIds = items.map(i => i.product);
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    if (products.length !== items.length) {
+      return res.status(400).json({ success: false, message: "Some products not found" });
+    }
+
+    // ✅ Calculate total amount
+    let amount = 0;
+    items.forEach(item => {
+      const product = products.find(p => p._id.toString() === item.product);
+      if (product) {
+        amount += product.offerPrice * item.quantity;
+      }
+    });
 
     // Add 2% tax
     amount += Math.floor(amount * 0.02);
-    console.log(`💰 Total amount with tax: ₹${amount}`);
 
-    // Create order
+    console.log(`💰 Total COD amount with tax: ₹${amount}`);
+
+    // ✅ Create order
     const order = await Order.create({
       userId,
       items,
@@ -40,47 +130,56 @@ export const placeOrderCOD = async (req, res) => {
       address,
       paymentType: "COD",
     });
+
     console.log("✅ COD order created:", order._id);
 
-    // Populate products for email
-    await order.populate("items.product");
-
-    // Get user info
-    const user = await User.findById(userId);
-
-    // Generate product HTML
-    const productHTML = generateOrderProductsHTML(order.items);
-
-    console.log("📧 Sending emails to user and admin...");
-    await Promise.all([
-      // User email
-      sendEmail({
-        to: user.email,
-        subject: `Order Confirmed - #${order._id}`,
-        html: `<h3>Hi ${user.name}</h3>
-               <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
-               ${productHTML}
-               <p>Payment Type: COD</p>`,
-      }),
-
-      // Admin email
-      sendEmail({
-        to: adminEmail,
-        subject: `New COD Order Received - #${order._id}`,
-        html: `<h3>New COD Order Received</h3>
-               <p>Customer: ${user.name} (${user.email})</p>
-               <p>Order ID: ${order._id}</p>
-               ${productHTML}`,
-      }),
-    ]);
-    console.log("✅ Emails sent successfully");
-
+    // ✅ Respond immediately to frontend
     res.status(201).json({ success: true, message: "Order placed successfully", order });
+
+    // ✅ Populate products for email (async, no await)
+    order.populate("items.product").then(async (populatedOrder) => {
+      try {
+        const user = await User.findById(userId);
+        const productHTML = generateOrderProductsHTML(populatedOrder.items);
+
+        // Send emails asynchronously
+        await Promise.all([
+          // Email to user
+          sendEmail({
+            to: user.email,
+            subject: `Order Confirmed - #${order._id}`,
+            html: `<h3>Hi ${user.name}</h3>
+                   <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
+                   ${productHTML}
+                   <p>Payment Type: COD</p>`,
+          }),
+          // Email to admin
+          sendEmail({
+            to: adminEmail,
+            subject: `New COD Order Received - #${order._id}`,
+            html: `<h3>New COD Order Received</h3>
+                   <p>Customer: ${user.name} (${user.email})</p>
+                   <p>Order ID: ${order._id}</p>
+                   ${productHTML}`,
+          }),
+        ]);
+
+        console.log("✅ Emails sent successfully");
+      } catch (err) {
+        console.error("❌ Error sending emails:", err.message);
+      }
+    });
+
   } catch (err) {
     console.error("❌ Error in placeOrderCOD:", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+
+
+
 
 // ------------------------
 // Place Order - Stripe (Online)
