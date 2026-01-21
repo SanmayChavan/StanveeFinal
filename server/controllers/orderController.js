@@ -89,7 +89,6 @@ const adminEmail = "sanmaychavan22@gmail.com";
 
 
 
-
 export const placeOrderCOD = async (req, res) => {
   try {
     const { userId, items, address } = req.body;
@@ -143,26 +142,26 @@ export const placeOrderCOD = async (req, res) => {
         const productHTML = generateOrderProductsHTML(populatedOrder.items);
 
         // Send emails asynchronously
-        await Promise.all([
-          // Email to user
-          sendEmail({
-            to: user.email,
-            subject: `Order Confirmed - #${order._id}`,
-            html: `<h3>Hi ${user.name}</h3>
-                   <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
-                   ${productHTML}
-                   <p>Payment Type: COD</p>`,
-          }),
-          // Email to admin
-          sendEmail({
-            to: adminEmail,
-            subject: `New COD Order Received - #${order._id}`,
-            html: `<h3>New COD Order Received</h3>
-                   <p>Customer: ${user.name} (${user.email})</p>
-                   <p>Order ID: ${order._id}</p>
-                   ${productHTML}`,
-          }),
-        ]);
+        // await Promise.all([
+        //   // Email to user
+        //   sendEmail({
+        //     to: user.email,
+        //     subject: `Order Confirmed - #${order._id}`,
+        //     html: `<h3>Hi ${user.name}</h3>
+        //            <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
+        //            ${productHTML}
+        //            <p>Payment Type: COD</p>`,
+        //   }),
+        //   // Email to admin
+        //   sendEmail({
+        //     to: adminEmail,
+        //     subject: `New COD Order Received - #${order._id}`,
+        //     html: `<h3>New COD Order Received</h3>
+        //            <p>Customer: ${user.name} (${user.email})</p>
+        //            <p>Order ID: ${order._id}</p>
+        //            ${productHTML}`,
+        //   }),
+        // ]);
 
         console.log("✅ Emails sent successfully");
       } catch (err) {
