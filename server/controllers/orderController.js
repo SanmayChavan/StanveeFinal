@@ -93,9 +93,8 @@ export const placeOrderCOD = async (req, res) => {
   try {
     const { userId, items, address } = req.body;
 
-    // ✅ Validate request data
+    // ✅ Validate input
     if (!userId || !address || !items || items.length === 0) {
-      console.log("❌ Invalid data for COD order");
       return res.status(400).json({ success: false, message: "Invalid order data" });
     }
 
@@ -135,39 +134,40 @@ export const placeOrderCOD = async (req, res) => {
     // ✅ Respond immediately to frontend
     res.status(201).json({ success: true, message: "Order placed successfully", order });
 
-    // ✅ Populate products for email (async, no await)
-    order.populate("items.product").then(async (populatedOrder) => {
+    // ✅ Fire-and-forget emails (background)
+    (async () => {
       try {
+        // Populate products for email
+        const populatedOrder = await order.populate("items.product");
         const user = await User.findById(userId);
         const productHTML = generateOrderProductsHTML(populatedOrder.items);
 
-        // Send emails asynchronously
-        // await Promise.all([
-        //   // Email to user
-        //   sendEmail({
-        //     to: user.email,
-        //     subject: `Order Confirmed - #${order._id}`,
-        //     html: `<h3>Hi ${user.name}</h3>
-        //            <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
-        //            ${productHTML}
-        //            <p>Payment Type: COD</p>`,
-        //   }),
-        //   // Email to admin
-        //   sendEmail({
-        //     to: adminEmail,
-        //     subject: `New COD Order Received - #${order._id}`,
-        //     html: `<h3>New COD Order Received</h3>
-        //            <p>Customer: ${user.name} (${user.email})</p>
-        //            <p>Order ID: ${order._id}</p>
-        //            ${productHTML}`,
-        //   }),
-        // ]);
+        await Promise.all([
+          // Email to user
+          sendEmail({
+            to: user.email,
+            subject: `Order Confirmed - #${order._id}`,
+            html: `<h3>Hi ${user.name}</h3>
+                   <p>Your order <b>#${order._id}</b> has been placed successfully.</p>
+                   ${productHTML}
+                   <p>Payment Type: COD</p>`,
+          }),
+          // Email to admin
+          sendEmail({
+            to: adminEmail,
+            subject: `New COD Order Received - #${order._id}`,
+            html: `<h3>New COD Order Received</h3>
+                   <p>Customer: ${user.name} (${user.email})</p>
+                   <p>Order ID: ${order._id}</p>
+                   ${productHTML}`,
+          }),
+        ]);
 
-        console.log("✅ Emails sent successfully");
+        console.log("✅ Emails sent successfully in background");
       } catch (err) {
-        console.error("❌ Error sending emails:", err.message);
+        console.error("❌ Error sending emails in background:", err.message);
       }
-    });
+    })();
 
   } catch (err) {
     console.error("❌ Error in placeOrderCOD:", err.message);
