@@ -3,7 +3,8 @@ import { useAppContext } from '../context/AppContext'
 import { useParams } from 'react-router-dom'
 import { categories } from '../assets/assets'
 import ProductCard from '../components/ProductCard'
-import ProductSkeleton from '../components/ProductSkeleton'
+import ProductSkeleton from '../components/Skeletons/ProductSkeleton'
+// import ProductSkeleton from '../components/ProductSkeleton'
 
 const ProductCategory = () => {
 

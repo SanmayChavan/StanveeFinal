@@ -79,10 +79,11 @@
 
 import React from 'react'
 import ProductCard from './ProductCard'
-import ProductSkeleton from './ProductSkeleton'
+// import ProductSkeleton from './ProductSkeleton'
 import { useAppContext } from '../context/AppContext'
 import { categories } from '../assets/assets'
 import footerBanner from '../assets/footer_banner.jpg'
+import ProductSkeleton from './Skeletons/ProductSkeleton'
 
 const BestSeller = () => {
   const { products } = useAppContext()

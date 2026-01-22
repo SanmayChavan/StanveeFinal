@@ -62,7 +62,8 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import ProductCard from '../components/ProductCard'
-import ProductSkeleton from '../components/ProductSkeleton'
+import ProductSkeleton from '../components/Skeletons/ProductSkeleton'
+// import ProductSkeleton from '../components/ProductSkeleton'
 
 const AllProducts = () => {
   const { products, searchQuery } = useAppContext()
