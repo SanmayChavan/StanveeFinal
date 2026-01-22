@@ -115,7 +115,7 @@ const MyOrders = () => {
     <div className="mt-16 px-4 md:px-10">
 
       {/* Title */}
-      <div className="flex flex-col items-center md:items-end mb-8">
+      <div className="flex flex-col items-center md:items-start mb-8">
         <p className="text-2xl font-medium uppercase">My Orders</p>
         <div className="w-16 h-0.5 rounded-full bg-primary mt-1"></div>
       </div>
