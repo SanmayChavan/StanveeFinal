@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import ProductSkeleton from '../components/Skeletons/ProductSkeleton'
+import MyOrdersSkeleton from '../components/Skeletons/MyOrdersSkeletons'
 // import ProductSkeleton from '../components/ProductSkeleton'
 
 const MyOrders = () => {
@@ -39,7 +40,7 @@ const MyOrders = () => {
 
       {/* Loading Skeleton */}
       {loading &&
-        Array.from({ length: 3 }).map((_, idx) => <ProductSkeleton key={idx} />)}
+        Array.from({ length: 3 }).map((_, idx) => <MyOrdersSkeleton key={idx} />)}
 
       {/* No orders message */}
       {!loading && myOrders?.length === 0 && (
