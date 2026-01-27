@@ -397,6 +397,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full">
+      
       {/* TOP BAR */}
       <div className="bg-[#203040] text-gray-200 text-[10px] md:text-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-10 px-4">
@@ -422,7 +423,7 @@ const Navbar = () => {
       {/* MAIN NAVBAR */}
       <div className="bg-white sticky top-0 z-50 border-b border-gray-100">
         {/* Upper Navbar */}
-        <div className="flex items-center justify-between px-4 py-4">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           {/* Logo */}
           <NavLink
             to="/"
@@ -598,8 +599,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {/* Mobile Menu Dropdown */}
+
         {/* Mobile Menu Dropdown */}
         {mobileMenuOpen &&
           (<div className="md:hidden px-4 pb-4 text-sm font-medium mt-3 space-y-2">
@@ -612,6 +612,7 @@ const Navbar = () => {
           </div>)}
 
       </div>
+
     </div>
   );
 };

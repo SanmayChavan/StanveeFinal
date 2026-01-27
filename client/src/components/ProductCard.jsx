@@ -58,7 +58,7 @@ const ProductCard = ({ product }) => {
 
           {/* Price & Cart */}
           <div className="flex items-end justify-between mt-3">
-            <p className="md:text-xl text-base font-medium text-primary">
+            <p className="md:text-[17px] text-base font-medium text-primary">
               {currency}{product.offerPrice}{" "}
               <span className="text-gray-500/60 md:text-sm text-xs line-through">
                 {currency}{product.price}
@@ -71,7 +71,7 @@ const ProductCard = ({ product }) => {
             >
               {!cartItems[product._id] ? (
                 <button
-                  className="flex cursor-pointer items-center justify-center gap-1 bg-primary/10 border border-primary/40 md:w-[80px] w-[64px] h-[34px] rounded"
+                  className="flex cursor-pointer items-center justify-center gap-1 bg-primary/10 border border-primary/40 md:w-16 w-[64px] h-[24px] rounded"
                   onClick={() =>
                     user ? addToCart(product._id) : setShowUserLogin(true)
                   }
@@ -80,7 +80,7 @@ const ProductCard = ({ product }) => {
                   Add
                 </button>
               ) : (
-                <div className="flex items-center justify-center gap-2 md:w-20 w-16 h-[34px] bg-primary/25 rounded select-none">
+                <div className="flex items-center justify-center gap-2 md:w-16 w-16 h-[34px] bg-primary/25 rounded select-none">
                   <button
                     onClick={() => removeFromCart(product._id)}
                     className="cursor-pointer text-md px-2 h-full"
