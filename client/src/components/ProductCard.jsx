@@ -145,7 +145,7 @@ const ProductCard = ({ product }) => {
   const imageUrl = product.image?.[0];
 
   return (
-    <div className="px-2 md:px-4">
+    <div className="px-1 md:px-4">
       <div
         onClick={() => {
           navigate(
