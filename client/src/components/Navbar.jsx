@@ -501,7 +501,7 @@ const Navbar = () => {
                 />
 
                 {profileOpen && (
-                  <ul className="absolute right-0 top-10 bg-white border shadow-lg rounded-md w-32 text-sm z-50">
+                  <ul className="absolute right-0 top-10 bg-white border  shadow-lg rounded-md w-32 text-sm z-50">
                     <li
                       onClick={() => {
                         navigate("/my-orders");
