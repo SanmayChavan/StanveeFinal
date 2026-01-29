@@ -196,10 +196,10 @@ const ProductCard = ({ product }) => {
 
           {/* Price & Cart */}
           <div className="flex items-end justify-between mt-3">
-            <p className="md:text-[17px] text-base font-medium text-primary">
+            <p className="md:text-[17px] sm:text-sm font-medium text-primary">
               {currency}
               {product.offerPrice}{" "}
-              <span className="text-gray-500/60 md:text-sm text-xs line-through">
+              <span className="text-gray-500/60 md:text-sm sm:text-sm  line-through">
                 {currency}
                 {product.price}
               </span>
