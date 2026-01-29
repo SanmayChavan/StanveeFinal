@@ -211,7 +211,7 @@ const ProductCard = ({ product }) => {
             >
               {!cartItems[product._id] ? (
                 <button
-                  className="flex cursor-pointer items-center justify-center gap-1 bg-primary/10 border border-primary/40 md:w-16 w-[64px] h-[24px] rounded"
+                  className="flex cursor-pointer items-center justify-center gap-1 bg-primary/10 border border-primary/40 md:w-16 w-[54px] h-[24px] rounded"
                   onClick={() =>
                     user ? addToCart(product._id) : setShowUserLogin(true)
                   }
