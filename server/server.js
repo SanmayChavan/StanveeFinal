@@ -23,7 +23,7 @@ const allowedOrigins = [
     'http://localhost:5173',
 
 ];
-// 'https://greencart-flax.vercel.app'
+
 
 //Middleware Configuration
 app.use(express.json());
