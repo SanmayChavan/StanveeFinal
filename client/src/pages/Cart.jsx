@@ -103,6 +103,7 @@ const Cart = () => {
 
   return (
     <div className="flex flex-col md:flex-row mt-16 px-10">
+
       {/* Cart Items */}
       <div className='flex-1 max-w-4xl'>
         <h1 className="text-3xl font-medium mb-6">
@@ -127,7 +128,7 @@ const Cart = () => {
               <div>
                 <p className="hidden md:block font-semibold">{product.name}</p>
                 <div className="font-normal text-gray-500/70">
-                  <p>Weight: <span>{product.weight || "N/A"}</span></p>
+                  {/* <p>Weight: <span>{product.weight || "N/A"}</span></p> */}
                   <div className='flex items-center gap-2 mt-1'>
                     <p>Qty:</p>
                     <select
@@ -232,6 +233,7 @@ const Cart = () => {
           {placingOrder ? "Processing..." : paymentOption === 'COD' ? "Place Order" : "Proceed to Checkout"}
         </button>
       </div>
+      
     </div>
   );
 };
