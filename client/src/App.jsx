@@ -21,6 +21,7 @@ import Loading from './components/Loading'
 import Contact from './pages/Contact'
 import Faq from './pages/Faq'
 import AboutUs from './pages/AboutUs'
+import UserDetails from './pages/UserDetails'
 
 const App = () => {
 
@@ -41,6 +42,9 @@ const App = () => {
           <Route path='/contact' element={<Contact />} />
           <Route path='/faq' element={<Faq />} />
           <Route path='/about' element={<AboutUs />} />
+
+          <Route path="/my-account" element={<UserDetails />} />
+
 
 
           <Route path='/products' element={<AllProducts />} />
