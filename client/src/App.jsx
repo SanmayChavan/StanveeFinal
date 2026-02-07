@@ -21,7 +21,10 @@ import Loading from './components/Loading'
 import Contact from './pages/Contact'
 import Faq from './pages/Faq'
 import AboutUs from './pages/AboutUs'
-import UserDetails from './pages/UserDetails'
+import UserDetails from './pages/MyAccount/UserDetails'
+import EditUser from './pages/MyAccount/EditUser'
+import EditAddress from './pages/MyAccount/EditAddress'
+// import UserDetails from './pages/UserDetails'
 
 const App = () => {
 
@@ -44,8 +47,8 @@ const App = () => {
           <Route path='/about' element={<AboutUs />} />
 
           <Route path="/my-account" element={<UserDetails />} />
-
-
+          <Route path="/edit-account" element={<EditUser />} />
+          <Route path="/edit-address" element={<EditAddress />} />
 
           <Route path='/products' element={<AllProducts />} />
           <Route path='/products/:category' element={<ProductCategory />} />
