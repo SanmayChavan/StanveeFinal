@@ -1,26 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
-import axios from "axios";
 import toast from "react-hot-toast";
+
+// Simple spinning loader
+const Loader = () => (
+  <div className="w-full h-32 flex items-center justify-center mt-10">
+    <div className="w-12 h-12 border-4 border-gray-300 border-t-primary rounded-full animate-spin" />
+  </div>
+);
 
 const UserDetails = () => {
   const { user, navigate, axios: axiosInstance } = useAppContext();
   const [fullUser, setFullUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [timeoutReached, setTimeoutReached] = useState(false);
 
   // Fetch user info
   const getUserInfo = async () => {
     try {
-      if (!user) return navigate("/login");
+      if (!user) return;
 
       const { data } = await axiosInstance.post("/api/user/is-auth", { userId: user._id });
-      if (data.success) {
-        setFullUser(data.user);
-      } else {
-        toast.error(data.message);
-      }
+      if (data.success) setFullUser(data.user);
+      else toast.error(data.message);
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -31,23 +35,35 @@ const UserDetails = () => {
   // Fetch user addresses
   const getUserAddresses = async () => {
     try {
+      if (!user) return;
+
       const { data } = await axiosInstance.post("/api/address/get", { userId: user._id });
-      if (data.success) {
-        setAddresses(data.addresses);
-      } else {
-        toast.error(data.message);
-      }
+      if (data.success) setAddresses(data.addresses);
+      else toast.error(data.message);
     } catch (err) {
       toast.error(err.message);
     }
   };
 
   useEffect(() => {
-    getUserInfo();
-    getUserAddresses();
+    // 10-second timer before redirect
+    const timer = setTimeout(() => setTimeoutReached(true), 10000);
+
+    if (user) {
+      getUserInfo();
+      getUserAddresses();
+    }
+
+    return () => clearTimeout(timer);
   }, [user]);
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  // Redirect to login only if timeout reached and user is undefined
+  useEffect(() => {
+    if (timeoutReached && !user) navigate("/login");
+  }, [timeoutReached, user, navigate]);
+
+  // Show loader while fetching
+  if (loading || !user) return <Loader />;
 
   if (!fullUser) return <p className="text-center mt-10">No user found.</p>;
 
@@ -61,7 +77,7 @@ const UserDetails = () => {
       <div className="bg-white shadow-md rounded-lg p-6 mb-8">
         <div className="flex items-center gap-4">
           <img
-            src={fullUser.avatar || assets.profile_icon} // ✅ use profile icon if no avatar
+            src={fullUser.avatar || assets.profile_icon}
             alt="User Avatar"
             className="w-20 h-20 rounded-full object-cover border"
           />
