@@ -99,10 +99,10 @@ const AllProducts = () => {
         {products.length === 0
           ? skeletonArray.map((_, i) => <ProductSkeleton key={i} />)
           : filteredProducts
-              .filter(product => product.inStock)
-              .map(product => (
-                <ProductCard key={product._id} product={product} />
-              ))
+            .filter(product => product.inStock)
+            .map(product => (
+              <ProductCard key={product._id} product={product} />
+            ))
         }
 
       </div>
