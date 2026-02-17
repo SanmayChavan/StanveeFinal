@@ -39,6 +39,8 @@ const Navbar = () => {
     { name: "Home Essentials", path: "/products/homeessentials" },
     { name: "Kitchen Appliances", path: "/products/kitchenappliances" },
     { name: "Kitchen Essentials", path: "/products/kitchenessentials" },
+    { name: "Business Essentials", path: "/products/businessessentials" },
+
   ];
 
   const logout = async () => {
