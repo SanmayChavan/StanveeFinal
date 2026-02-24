@@ -18,6 +18,7 @@ const ProductDetails = () => {
 
     const [thumbnail, setThumbnail] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const [selectedCoupon, setSelectedCoupon] = useState(null);
 
     const product = products.find(item => item._id === id);
 
@@ -51,6 +52,12 @@ const ProductDetails = () => {
 
     if (!product) return null;
 
+    /* Final price calculation */
+    const finalPrice =
+        selectedCoupon === "COUPON"
+            ? product.offerPrice - product.couponDiscount
+            : product.offerPrice;
+
     return (
         <div className="mt-12 px-4 md:px-16">
             {/* Breadcrumb */}
@@ -67,7 +74,7 @@ const ProductDetails = () => {
 
             {/* Product Section */}
             <div className="flex flex-col md:flex-row gap-16 mt-4">
-                {/* Images */}
+
                 {/* Images */}
                 <div className="flex gap-6">
                     {/* Thumbnails */}
@@ -76,10 +83,11 @@ const ProductDetails = () => {
                             <button
                                 key={index}
                                 onClick={() => setThumbnail(image)}
-                                className={`border rounded overflow-hidden cursor-pointer w-14 md:w-20 h-20 flex-shrink-0 ${thumbnail === image
+                                className={`border rounded overflow-hidden cursor-pointer w-14 md:w-20 h-20 flex-shrink-0 ${
+                                    thumbnail === image
                                         ? "border-primary"
                                         : "border-gray-300"
-                                    }`}
+                                }`}
                             >
                                 <img
                                     src={image}
@@ -102,47 +110,80 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-
                 {/* Product Info */}
                 <div className="text-sm w-full md:w-1/2">
                     <h1 className="text-3xl font-medium">{product.name}</h1>
 
                     {/* Rating */}
                     <div className="flex items-center gap-0.5 mt-1">
-                        {Array(5)
-                            .fill('')
-                            .map((_, i) => (
-                                <img
-                                    key={i}
-                                    src={
-                                        i < 4
-                                            ? assets.star_icon
-                                            : assets.star_dull_icon
-                                    }
-                                    className="md:w-4 w-3.5"
-                                    alt="rating star"
-                                />
-                            ))}
+                        {Array(5).fill('').map((_, i) => (
+                            <img
+                                key={i}
+                                src={
+                                    i < 4
+                                        ? assets.star_icon
+                                        : assets.star_dull_icon
+                                }
+                                className="md:w-4 w-3.5"
+                                alt="rating star"
+                            />
+                        ))}
                         <p className="text-base ml-2">(4)</p>
                     </div>
 
                     {/* Price */}
                     <div className="mt-6">
                         <p className="text-gray-500/70 line-through">
-                            MRP: {currency}
-                            {product.price}
+                            MRP: {currency}{product.price}
                         </p>
+
                         <p className="text-2xl font-medium">
-                            Price: {currency}
-                            {product.offerPrice}
+                            Price: {currency}{finalPrice}
                         </p>
+
+                        {selectedCoupon && (
+                            <p className="text-green-600 text-sm mt-1">
+                                Coupon Applied! You saved {currency}
+                                {product.couponDiscount}
+                            </p>
+                        )}
+
                         <span className="text-gray-500/70">
                             (inclusive of all taxes)
                         </span>
                     </div>
 
+                    {/* Coupon Dropdown */}
+                    {product.couponDiscount > 0 && (
+                        <div className="mt-6">
+                            <p className="text-base font-medium">
+                                Apply Coupon
+                            </p>
+
+                            <select
+                                value={selectedCoupon || ""}
+                                onChange={(e) =>
+                                    setSelectedCoupon(
+                                        e.target.value === ""
+                                            ? null
+                                            : e.target.value
+                                    )
+                                }
+                                className="mt-2 border border-gray-300 rounded px-3 py-2 w-full"
+                            >
+                                <option value="">Select Coupon</option>
+                                <option value="COUPON">
+                                    Save {currency}
+                                    {product.couponDiscount}
+                                </option>
+                            </select>
+                        </div>
+                    )}
+
                     {/* Description */}
-                    <p className="text-base font-medium mt-6">About Product</p>
+                    <p className="text-base font-medium mt-6">
+                        About Product
+                    </p>
                     <ul className="list-disc ml-4 text-gray-500/70">
                         {product.description?.map((desc, index) => (
                             <li key={index}>{desc}</li>
@@ -182,7 +223,9 @@ const ProductDetails = () => {
             {/* Related Products */}
             <div className="flex flex-col items-center mt-20">
                 <div className="flex flex-col items-center w-max">
-                    <p className="text-3xl font-medium">Related products</p>
+                    <p className="text-3xl font-medium">
+                        Related products
+                    </p>
                     <div className="w-20 h-0.5 rounded-full bg-primary mt-2"></div>
                 </div>
 
