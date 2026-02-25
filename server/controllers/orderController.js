@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import stripe from "stripe";
 import { sendEmail } from "../utils/sendEmail.js";
 import { generateOrderProductsHTML } from "../utils/emailTemplates.js";
-import Product from "../models/Product.js";
+import Product from "../models/product.js";
 
 
 // Admin email
