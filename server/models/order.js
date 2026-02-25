@@ -43,7 +43,6 @@
 // const Order = mongoose.models.order || mongoose.model("order", orderSchema);
 // export default Order;
 
-
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
@@ -51,7 +50,7 @@ const orderSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "user", // lowercase
+      ref: "user", // lowercase → matches User model
     },
 
     items: [
@@ -59,57 +58,33 @@ const orderSchema = new mongoose.Schema(
         product: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
-          ref: "product", // lowercase (matches product model)
+          ref: "product",
         },
-
-        quantity: {
-          type: Number,
-          required: true,
-        },
-
-        finalPrice: {
-          type: Number,
-          required: true,
-        },
+        quantity: { type: Number, required: true },
+        finalPrice: { type: Number, required: true },
       },
     ],
 
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
-
-    walletDeduction: {
-      type: Number,
-      default: 0,
-    },
+    totalAmount: { type: Number, required: true },
+    walletDeduction: { type: Number, default: 0 },
 
     address: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "address", // lowercase
+      ref: "address", // lowercase → matches Address model
     },
 
     status: {
       type: String,
       enum: ["Pending", "Order Placed", "Shipped", "Delivered", "Cancelled"],
-      default: "Order Placed"
+      default: "Order Placed",
     },
 
-    paymentType: {
-      type: String,
-      required: true,
-    },
-
-    isPaid: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
+    paymentType: { type: String, required: true },
+    isPaid: { type: Boolean, required: true, default: false },
   },
   { timestamps: true }
 );
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
-
 export default Order;

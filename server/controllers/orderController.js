@@ -756,68 +756,412 @@ export const getUserOrder = async (req, res) => {
 // };
 
 
+
+
+
+
+// export const getAllOrder = async (req, res) => {
+
+//   try {
+//     const orders = await Order.find({
+//       $or: [{ paymentType: "COD" }, { isPaid: true }],
+//     })
+//       .populate("items.product")
+//       .populate("userId", "name email phone")
+//       // Only populate address if it's a valid ObjectId
+//       .sort({ createdAt: -1 })
+//       .lean();
+
+//     const enrichedOrders = orders.map((order) => {
+//       // Handle address: if it's a string, use as-is
+//       const address =
+//         typeof order.address === "string" ? { full: order.address } : order.address;
+
+//       const updatedItems = order.items.map((item) => {
+//         const product = item.product;
+
+//         if (!product) {
+//           return {
+//             ...item,
+//             finalPrice: 0,
+//             finalPriceTotal: 0,
+//             name: "Product unavailable",
+//             category: null,
+//             image: [],
+//             couponSelected: item.couponSelected || false,
+//             couponDiscount: item.couponDiscount || 0,
+//           };
+//         }
+
+//         const couponDeduction = item.couponSelected
+//           ? Math.min(product.couponDiscount || 0, product.offerPrice)
+//           : 0;
+//         const finalPrice = product.offerPrice - couponDeduction;
+
+//         return {
+//           ...item,
+//           finalPrice,
+//           finalPriceTotal: finalPrice * item.quantity,
+//           name: product.name,
+//           category: product.category,
+//           image: product.image,
+//           offerPrice: product.offerPrice,
+//           couponDiscount: couponDeduction,
+//         };
+//       });
+
+//       const totalAmount = updatedItems.reduce((acc, i) => acc + i.finalPriceTotal, 0);
+
+//       return {
+//         _id: order._id,
+//         user: order.userId,
+//         items: updatedItems,
+//         amount: totalAmount,
+//         walletDeduction: order.walletDeduction || 0,
+//         address, // safe
+//         status: order.status,
+//         paymentType: order.paymentType,
+//         isPaid: order.isPaid,
+//         createdAt: order.createdAt,
+//         updatedAt: order.updatedAt,
+//       };
+//     });
+
+//     res.json({ success: true, orders: enrichedOrders });
+//   } catch (err) {
+//     console.error("❌ Error in getAllOrder:", err.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+
+
+
+// export const getAllOrder = async (req, res) => {
+
+//   try {
+//     // Fetch all orders, sorted by newest first
+//     const orders = await Order.find({})
+//       .populate("items.product")           // Populate product details
+//       .populate("userId", "name email phone") // Populate user info
+//       .populate("address")                 // Populate address if it's an ObjectId
+//       .sort({ createdAt: -1 })
+//       .lean();
+
+//     // Enrich items and safely handle address
+//     const enrichedOrders = orders.map((order) => {
+//       const address =
+//         typeof order.address === "string" ? { full: order.address } : order.address;
+
+//       const updatedItems = order.items.map((item) => {
+//         const product = item.product;
+
+//         if (!product) {
+//           return {
+//             ...item,
+//             finalPrice: 0,
+//             finalPriceTotal: 0,
+//             name: "Product unavailable",
+//             category: null,
+//             image: [],
+//             couponSelected: item.couponSelected || false,
+//             couponDiscount: item.couponDiscount || 0,
+//           };
+//         }
+
+//         const couponDeduction = item.couponSelected
+//           ? Math.min(product.couponDiscount || 0, product.offerPrice)
+//           : 0;
+//         const finalPrice = product.offerPrice - couponDeduction;
+
+//         return {
+//           ...item,
+//           finalPrice,
+//           finalPriceTotal: finalPrice * item.quantity,
+//           name: product.name,
+//           category: product.category,
+//           image: product.image,
+//           offerPrice: product.offerPrice,
+//           couponDiscount: couponDeduction,
+//         };
+//       });
+
+//       const totalAmount = updatedItems.reduce((acc, i) => acc + i.finalPriceTotal, 0);
+
+//       return {
+//         _id: order._id,
+//         user: order.userId,
+//         items: updatedItems,
+//         amount: totalAmount,
+//         walletDeduction: order.walletDeduction || 0,
+//         address,
+//         status: order.status,
+//         paymentType: order.paymentType,
+//         isPaid: order.isPaid,
+//         createdAt: order.createdAt,
+//         updatedAt: order.updatedAt,
+//       };
+//     });
+
+//     res.json({ success: true, orders: enrichedOrders });
+//   } catch (err) {
+//     console.error("❌ Error in getAllOrder:", err.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+
+
+
+
+import mongoose from "mongoose";
+
+
+import address from "../models/adress.js";
+
+// export const getAllOrder = async (req, res) => {
+
+//   try {
+//     // 1. Fetch orders WITHOUT populating address yet
+//     const orders = await Order.find({})
+//       .populate("items.product")
+//       .populate("userId", "name email phone")
+//       .sort({ createdAt: -1 })
+//       .lean();
+
+//     // 2. Process each order manually
+//     const enrichedOrders = await Promise.all(orders.map(async (order) => {
+//       let finalAddress = null;
+
+//       // Check if the address field looks like a MongoDB ObjectId
+//       if (order.address && mongoose.Types.ObjectId.isValid(order.address)) {
+//         try {
+//           // Attempt to find the document in the Address collection
+//           finalAddress = await address.findById(order.address);
+//         } catch (err) {
+//           finalAddress = null;
+//         }
+//       }
+
+//       // If no document was found, or if it was a string like "Mumbai, India"
+//       if (!finalAddress) {
+//         finalAddress = { 
+//           full: typeof order.address === 'string' ? order.address : "No address details",
+//           isLegacy: true 
+//         };
+//       }
+
+//       // 3. Map Items and calculate totals
+//       const updatedItems = (order.items || []).map((item) => {
+//         const product = item.product;
+//         if (!product) {
+//           return { ...item, name: "Product unavailable", finalPrice: 0 };
+//         }
+
+//         const couponDeduction = item.couponSelected
+//           ? Math.min(product.couponDiscount || 0, product.offerPrice)
+//           : 0;
+//         const finalPrice = (product.offerPrice || 0) - couponDeduction;
+
+//         return {
+//           ...item,
+//           name: product.name,
+//           image: product.image,
+//           finalPrice,
+//           finalPriceTotal: finalPrice * item.quantity,
+//         };
+//       });
+
+//       const totalAmount = updatedItems.reduce((acc, i) => acc + (i.finalPriceTotal || 0), 0);
+
+//       return {
+//         ...order,
+//         user: order.userId, // Matches your frontend 'user' expectation
+//         address: finalAddress,
+//         items: updatedItems,
+//         amount: totalAmount,
+//       };
+//     }));
+
+//     console.log(`✅ Returning ${enrichedOrders.length} orders successfully.`);
+//     res.json({ success: true, orders: enrichedOrders });
+
+//   } catch (err) {
+//     console.error("❌ Critical Error in getAllOrder:", err.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+
+// export const getAllOrder = async (req, res) => {
+//   try {
+//     const orders = await Order.find({})
+//       .populate("items.product")
+//       .populate("userId", "name email phone")
+//       .sort({ createdAt: -1 })
+//       .lean();
+
+//     const enrichedOrders = await Promise.all(orders.map(async (order) => {
+//       let finalAddress = null;
+
+//       if (order.address && mongoose.Types.ObjectId.isValid(order.address)) {
+//         try {
+//           finalAddress = await address.findById(order.address);
+//         } catch (err) {
+//           finalAddress = null;
+//         }
+//       }
+
+//       if (!finalAddress) {
+//         finalAddress = { 
+//           full: typeof order.address === 'string' ? order.address : "No address details",
+//           isLegacy: true 
+//         };
+//       }
+
+//       // 🔍 VS CODE LOGGING START
+//       console.log("--- Order Debug Info ---");
+//       console.log(`Order ID: ${order._id}`);
+//       console.log(`User Name: ${order.userId?.name}`);
+//       console.log(`User Phone (from userId): ${order.userId?.phone || "NOT FOUND"}`);
+
+//       if (finalAddress.isLegacy) {
+//         console.log(`Address: Legacy String -> ${finalAddress.full}`);
+//       } else {
+//         console.log(`Address Phone: ${finalAddress.phone || "NOT FOUND IN ADDRESS"}`);
+//         console.log(`Address City: ${finalAddress.city}`);
+//       }
+//       console.log("------------------------");
+//       // 🔍 VS CODE LOGGING END
+
+//       const updatedItems = (order.items || []).map((item) => {
+//         const product = item.product;
+//         if (!product) return { ...item, name: "Product unavailable", finalPrice: 0 };
+
+//         const couponDeduction = item.couponSelected
+//           ? Math.min(product.couponDiscount || 0, product.offerPrice)
+//           : 0;
+//         const finalPrice = (product.offerPrice || 0) - couponDeduction;
+
+//         return {
+//           ...item,
+//           name: product.name,
+//           image: product.image,
+//           finalPrice,
+//           finalPriceTotal: finalPrice * item.quantity,
+//         };
+//       });
+
+//       const totalAmount = updatedItems.reduce((acc, i) => acc + (i.finalPriceTotal || 0), 0);
+
+//       return {
+//         ...order,
+//         user: order.userId,
+//         address: finalAddress,
+//         items: updatedItems,
+//         amount: totalAmount,
+//       };
+//     }));
+
+//     res.json({ success: true, orders: enrichedOrders });
+
+//   } catch (err) {
+//     console.error("❌ Critical Error in getAllOrder:", err.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+
 export const getAllOrder = async (req, res) => {
   try {
-    const orders = await Order.find({
-      $or: [{ paymentType: "COD" }, { isPaid: true }],
-    })
-      .populate("items.product") // populate product info
-      .populate("userId", "name email phone") // populate user details
-      .sort({ createdAt: -1 })
+    const orders = await Order.find({})
+      .populate("items.product")
+      .populate("userId", "name email phone")
+      .sort({ createdAt: -1 }) // 👈 This ensures latest orders are first
       .lean();
 
-    const enrichedOrders = orders.map(order => {
-      const updatedItems = order.items.map(item => {
-        const product = item.product;
+    console.log(`\n🚀 [SYSTEM] Processing ${orders.length} orders (Latest First)`);
 
-        if (!product) {
-          return {
-            ...item,
-            finalPrice: 0,
-            finalPriceTotal: 0,
-            name: "Product unavailable",
-            category: null,
-            image: [],
-            couponSelected: item.couponSelected || false,
-            couponDiscount: item.couponDiscount || 0,
-          };
+    const enrichedOrders = await Promise.all(orders.map(async (order, idx) => {
+      let finalAddress = null;
+
+      // Handle Address Reference
+      if (order.address && mongoose.Types.ObjectId.isValid(order.address)) {
+        try {
+          finalAddress = await address.findById(order.address);
+        } catch (err) {
+          finalAddress = null;
         }
+      }
 
-        const couponDeduction = item.couponSelected ? Math.min(product.couponDiscount || 0, product.offerPrice) : 0;
-        const finalPrice = product.offerPrice - couponDeduction;
+      if (!finalAddress) {
+        finalAddress = {
+          full: typeof order.address === 'string' ? order.address : "No address details",
+          isLegacy: true
+        };
+      }
+
+      // 🔍 FULL VS CODE CONSOLE LOGGING
+      console.log(`\n--- [ORDER #${idx + 1}] ---`);
+      console.log(`📅 Created At: ${order.createdAt}`);
+      console.log(`🆔 ID: ${order._id}`);
+      console.log(`👤 Customer: ${order.userId?.name || "N/A"}`);
+      console.log(`📧 Email: ${order.userId?.email || "N/A"}`);
+      console.log(`📞 User Phone: ${order.userId?.phone || "NOT FOUND"}`);
+      console.log(`🏠 Address Phone: ${finalAddress?.phone || "NOT FOUND"}`);
+      console.log(`📍 City: ${finalAddress?.city || "N/A"}`);
+
+      const updatedItems = (order.items || []).map((item, i) => {
+        const product = item.product;
+        if (!product) return { ...item, name: "Product unavailable", finalPrice: 0 };
+
+        // Calculation Logic
+        const basePrice = product.offerPrice || 0;
+        const couponDeduction = item.couponSelected
+          ? Math.min(product.couponDiscount || 0, basePrice)
+          : 0;
+        const unitFinalPrice = basePrice - couponDeduction;
+        const totalForLine = unitFinalPrice * item.quantity;
+
+        // Log Item Details
+        console.log(`   📦 Item ${i + 1}: ${product.name}`);
+        console.log(`      - Qty: ${item.quantity}`);
+        console.log(`      - Base Price: ${basePrice}`);
+        console.log(`      - Discount: -${couponDeduction} ${item.couponSelected ? "(Coupon Applied)" : "(No Coupon)"}`);
+        console.log(`      - Final Unit Price: ${unitFinalPrice}`);
+        console.log(`      - Subtotal: ${totalForLine}`);
 
         return {
           ...item,
-          finalPrice,
-          finalPriceTotal: finalPrice * item.quantity,
           name: product.name,
-          category: product.category,
           image: product.image,
-          offerPrice: product.offerPrice,
-          couponDiscount: couponDeduction,
+          finalPrice: unitFinalPrice,
+          finalPriceTotal: totalForLine,
         };
       });
 
-      const totalAmount = updatedItems.reduce((acc, i) => acc + i.finalPriceTotal, 0);
+      const orderTotal = updatedItems.reduce((acc, i) => acc + (i.finalPriceTotal || 0), 0);
+      const walletUsed = order.walletDeduction || 0;
+
+      console.log(`💰 ORDER TOTAL: ${orderTotal}`);
+      console.log(`👛 WALLET USED: ${walletUsed}`);
+      console.log(`💳 FINAL PAYABLE: ${orderTotal - walletUsed}`);
+      console.log(`📝 Status: ${order.status}`);
+      console.log(`--------------------------`);
 
       return {
-        _id: order._id,
-        user: order.userId,  // populated user info
+        ...order,
+        user: order.userId,
+        address: finalAddress,
         items: updatedItems,
-        amount: totalAmount,
-        walletDeduction: order.walletDeduction || 0,
-        address: order.address,  // embedded address
-        status: order.status,
-        paymentType: order.paymentType,
-        isPaid: order.isPaid,
-        createdAt: order.createdAt,
-        updatedAt: order.updatedAt,
+        amount: orderTotal,
       };
-    });
+    }));
 
     res.json({ success: true, orders: enrichedOrders });
+
   } catch (err) {
-    console.error("❌ Error in getAllOrder:", err.message);
+    console.error("❌ Critical Error in getAllOrder:", err.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
