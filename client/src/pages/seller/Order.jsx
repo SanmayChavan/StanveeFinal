@@ -71,11 +71,11 @@ const Order = () => {
                                 {item.name} <span className="text-primary">× {item.quantity}</span>
                               </p>
                               <div className="text-[11px] text-gray-500 flex justify-between mt-1">
-                                <span>Unit: {currency}{item.finalPrice}</span>
+                                {/* <span>Unit: {currency}{item.finalPrice}</span> */}
                                 {item.couponDiscount > 0 && (
                                   <span className="text-green-600 font-medium">Coupon: -{currency}{item.couponDiscount}</span>
                                 )}
-                                <span className="font-medium text-gray-700">Sub: {currency}{item.finalPriceTotal}</span>
+                                {/* <span className="font-medium text-gray-700">Sub: {currency}{item.finalPriceTotal}</span> */}
                               </div>
                             </div>
                           ))
