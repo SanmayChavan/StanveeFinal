@@ -16,7 +16,7 @@
 
 
 import User from "../models/User.js";
-import Product from "../models/Product.js";
+import Product from "../models/product.js";
 
 export const updateCart = async (req, res) => {
     try {
