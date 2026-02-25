@@ -1080,7 +1080,7 @@ export const getAllOrder = async (req, res) => {
       .sort({ createdAt: -1 }) // 👈 This ensures latest orders are first
       .lean();
 
-    console.log(`\n🚀 [SYSTEM] Processing ${orders.length} orders (Latest First)`);
+    // console.log(`\n🚀 [SYSTEM] Processing ${orders.length} orders (Latest First)`);
 
     const enrichedOrders = await Promise.all(orders.map(async (order, idx) => {
       let finalAddress = null;
@@ -1102,14 +1102,14 @@ export const getAllOrder = async (req, res) => {
       }
 
       // 🔍 FULL VS CODE CONSOLE LOGGING
-      console.log(`\n--- [ORDER #${idx + 1}] ---`);
-      console.log(`📅 Created At: ${order.createdAt}`);
-      console.log(`🆔 ID: ${order._id}`);
-      console.log(`👤 Customer: ${order.userId?.name || "N/A"}`);
-      console.log(`📧 Email: ${order.userId?.email || "N/A"}`);
-      console.log(`📞 User Phone: ${order.userId?.phone || "NOT FOUND"}`);
-      console.log(`🏠 Address Phone: ${finalAddress?.phone || "NOT FOUND"}`);
-      console.log(`📍 City: ${finalAddress?.city || "N/A"}`);
+      // console.log(`\n--- [ORDER #${idx + 1}] ---`);
+      // console.log(`📅 Created At: ${order.createdAt}`);
+      // console.log(`🆔 ID: ${order._id}`);
+      // console.log(`👤 Customer: ${order.userId?.name || "N/A"}`);
+      // console.log(`📧 Email: ${order.userId?.email || "N/A"}`);
+      // console.log(`📞 User Phone: ${order.userId?.phone || "NOT FOUND"}`);
+      // console.log(`🏠 Address Phone: ${finalAddress?.phone || "NOT FOUND"}`);
+      // console.log(`📍 City: ${finalAddress?.city || "N/A"}`);
 
       const updatedItems = (order.items || []).map((item, i) => {
         const product = item.product;
@@ -1124,12 +1124,12 @@ export const getAllOrder = async (req, res) => {
         const totalForLine = unitFinalPrice * item.quantity;
 
         // Log Item Details
-        console.log(`   📦 Item ${i + 1}: ${product.name}`);
-        console.log(`      - Qty: ${item.quantity}`);
-        console.log(`      - Base Price: ${basePrice}`);
-        console.log(`      - Discount: -${couponDeduction} ${item.couponSelected ? "(Coupon Applied)" : "(No Coupon)"}`);
-        console.log(`      - Final Unit Price: ${unitFinalPrice}`);
-        console.log(`      - Subtotal: ${totalForLine}`);
+        // console.log(`   📦 Item ${i + 1}: ${product.name}`);
+        // console.log(`      - Qty: ${item.quantity}`);
+        // console.log(`      - Base Price: ${basePrice}`);
+        // console.log(`      - Discount: -${couponDeduction} ${item.couponSelected ? "(Coupon Applied)" : "(No Coupon)"}`);
+        // console.log(`      - Final Unit Price: ${unitFinalPrice}`);
+        // console.log(`      - Subtotal: ${totalForLine}`);
 
         return {
           ...item,
@@ -1143,11 +1143,11 @@ export const getAllOrder = async (req, res) => {
       const orderTotal = updatedItems.reduce((acc, i) => acc + (i.finalPriceTotal || 0), 0);
       const walletUsed = order.walletDeduction || 0;
 
-      console.log(`💰 ORDER TOTAL: ${orderTotal}`);
-      console.log(`👛 WALLET USED: ${walletUsed}`);
-      console.log(`💳 FINAL PAYABLE: ${orderTotal - walletUsed}`);
-      console.log(`📝 Status: ${order.status}`);
-      console.log(`--------------------------`);
+      // console.log(`💰 ORDER TOTAL: ${orderTotal}`);
+      // console.log(`👛 WALLET USED: ${walletUsed}`);
+      // console.log(`💳 FINAL PAYABLE: ${orderTotal - walletUsed}`);
+      // console.log(`📝 Status: ${order.status}`);
+      // console.log(`--------------------------`);
 
       return {
         ...order,
