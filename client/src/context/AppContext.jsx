@@ -1,3 +1,214 @@
+// import { createContext, useContext, useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import toast from "react-hot-toast";
+// import axios from "axios";
+
+// axios.defaults.withCredentials = true;
+// axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+
+// export const AppContext = createContext();
+
+// export const AppContextProvider = ({ children }) => {
+//   const currency = import.meta.env.VITE_CURRENCY;
+
+//   const navigate = useNavigate();
+//   const [user, setUser] = useState(null);
+//   const [isSeller, setIsSeller] = useState(false);
+//   const [showUserLogin, setShowUserLogin] = useState(false);
+//   const [products, setProducts] = useState([]);
+//   const [cartItems, setCartItems] = useState({});
+//   const [searchQuery, setSearchQuery] = useState({});
+
+//   const [walletBalance, setWalletBalance] = useState(0);
+
+//   // fetch seller status
+//   const fetchSeller = async () => {
+//     try {
+//       const { data } = await axios.get("/api/seller/is-auth");
+//       if (data.success) {
+//         setIsSeller(true);
+//       } else {
+//         setIsSeller(false);
+//       }
+//     } catch (err) {
+//       setIsSeller(false);
+//     }
+//   };
+
+//   //fetch user auth status, user data and cart items
+//   // const fetchUser = async (req, res) => {
+//   //   try {
+//   //     const payload = user?._id ? { userId: user._id } : {};
+//   //     const { data } = await axios.post("/api/user/is-auth", payload, {
+//   //       withCredentials: true,
+//   //     });
+//   //     if (data.success) {
+//   //       setUser(data.user);
+//   //       setCartItems(data.user.cartItems);
+//   //     }
+//   //   } catch (err) {
+//   //     console.log("Auth error:", err.message);
+//   //   }
+//   // };
+//   const fetchUser = async () => {
+//     try {
+//       const payload = user?._id ? { userId: user._id } : {};
+//       const { data } = await axios.post("/api/user/is-auth", payload, {
+//         withCredentials: true,
+//       });
+
+//       if (data.success) {
+//         setUser(data.user); // full user object
+//         setCartItems(data.user.cartItems || {});
+
+//         // ✅ Set wallet balance separately
+//         setWalletBalance(data.user.walletBalance || 0);
+//       }
+//     } catch (err) {
+//       console.log("Auth error:", err.message);
+//     }
+//   };
+
+//   // fetch all products
+//   const fetchProducts = async () => {
+//     try {
+//       const { data } = await axios.get("/api/product/list");
+//       if (data.success) {
+//         setProducts(data.products);
+//       } else {
+//         console.log(data.message);
+//       }
+//     } catch (err) {
+//       console.log(err.message);
+//       console.log(err.message);
+//     }
+//   };
+
+//   // add product to cart
+//   const addToCart = (itemId) => {
+//     if (user) {
+//       let cartData = structuredClone(cartItems);
+
+//       if (cartData[itemId]) {
+//         cartData[itemId] += 1;
+//       } else {
+//         cartData[itemId] = 1;
+//       }
+
+//       setCartItems(cartData);
+//       toast.success("Added To Cart");
+//     } else {
+//       toast.error("Login to add to cart..");
+//     }
+//   };
+
+//   // update cart item quantity
+//   const updateCartItem = (itemId, quantity) => {
+//     let cartData = structuredClone(cartItems);
+
+//     cartData[itemId] = quantity;
+//     setCartItems(cartData);
+//   };
+
+//   // Remove product from cart
+//   const removeFromCart = (itemId) => {
+//     let cartData = structuredClone(cartItems);
+
+//     if (cartData[itemId]) {
+//       cartData[itemId] -= 1;
+//       if (cartData[itemId] === 0) {
+//         delete cartData[itemId];
+//       }
+//     }
+
+//     toast.success("Removed From Cart");
+//     setCartItems(cartData);
+//   };
+
+//   // Get cart item count
+//   const getCartCount = () => {
+//     let totalCount = 0;
+//     for (const item in cartItems) {
+//       totalCount += cartItems[item];
+//     }
+//     return totalCount;
+//   };
+
+//   // Get cart total amount
+//   const getCartAmount = () => {
+//     let totalAmount = 0;
+//     for (const items in cartItems) {
+//       let itemInfo = products.find((product) => product._id === items);
+//       if (cartItems[items] > 0) {
+//         totalAmount += cartItems[items] * itemInfo.offerPrice;
+//       }
+//     }
+//     return Math.floor(totalAmount * 100) / 100;
+//   };
+
+//   useEffect(() => {
+//     fetchUser();
+//     fetchSeller();
+//     fetchProducts();
+//   }, []);
+
+//   // update database cart items
+//   useEffect(() => {
+//     const updateCart = async () => {
+//       try {
+//         const { data } = await axios.post(
+//           "/api/cart/update",
+//           { cartItems },
+//           { withCredentials: true }
+//         );
+//         if (!data.success) {
+//           console.log(data.message);
+//         }
+//       } catch (err) {
+//         console.log(err.message);
+//       }
+//     };
+//     if (user) {
+//       updateCart();
+//     }
+//   }, [cartItems]);
+
+//   const value = {
+//     navigate,
+//     user,
+//     setUser,
+//     isSeller,
+//     setIsSeller,
+//     showUserLogin,
+//     setShowUserLogin,
+//     products,
+//     currency,
+//     cartItems,
+//     addToCart,
+//     updateCartItem,
+//     removeFromCart,
+//     searchQuery,
+//     getCartCount,
+//     getCartAmount,
+//     setSearchQuery,
+//     axios,
+//     fetchSeller,
+//     fetchProducts,
+//     setCartItems,
+
+//     walletBalance,
+//   };
+
+//   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+// };
+
+// export const useAppContext = () => {
+//   return useContext(AppContext);
+// };
+
+
+
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -10,120 +221,253 @@ export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
-
   const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
+  const [walletBalance, setWalletBalance] = useState(0);
   const [searchQuery, setSearchQuery] = useState({});
 
-  // fetch seller status
+  // Fetch seller status
   const fetchSeller = async () => {
     try {
       const { data } = await axios.get("/api/seller/is-auth");
-      if (data.success) {
-        setIsSeller(true);
-      } else {
-        setIsSeller(false);
-      }
-    } catch (err) {
+      setIsSeller(data.success);
+    } catch {
       setIsSeller(false);
     }
   };
 
-  //fetch user auth status, user data and cart items
-  const fetchUser = async (req, res) => {
+  // Fetch user data
+  const fetchUser = async () => {
     try {
       const payload = user?._id ? { userId: user._id } : {};
-      const { data } = await axios.post("/api/user/is-auth", payload, {
-        withCredentials: true,
-      });
+      const { data } = await axios.post("/api/user/is-auth", payload, { withCredentials: true });
+
       if (data.success) {
         setUser(data.user);
-        setCartItems(data.user.cartItems);
+        setCartItems(data.user.cartItems || {});
+        setWalletBalance(data.user.walletBalance || 0);
       }
     } catch (err) {
       console.log("Auth error:", err.message);
     }
   };
 
-  // fetch all products
+  // Fetch products
   const fetchProducts = async () => {
     try {
       const { data } = await axios.get("/api/product/list");
-      if (data.success) {
-        setProducts(data.products);
-      } else {
-        console.log(data.message);
-      }
+      if (data.success) setProducts(data.products);
     } catch (err) {
-      console.log(err.message);
       console.log(err.message);
     }
   };
 
-  // add product to cart
-  const addToCart = (itemId) => {
+  // Add product to cart
+  const addToCart = (itemId, couponSelected = false) => {
     if (user) {
       let cartData = structuredClone(cartItems);
 
       if (cartData[itemId]) {
-        cartData[itemId] += 1;
+        // Increment quantity
+        cartData[itemId].quantity += 1;
       } else {
-        cartData[itemId] = 1;
+        // Initialize with quantity 1
+        cartData[itemId] = {
+          quantity: 1,
+          couponSelected: couponSelected
+        };
       }
 
       setCartItems(cartData);
       toast.success("Added To Cart");
-    }else{
+    } else {
       toast.error("Login to add to cart..");
     }
   };
 
-  // update cart item quantity
-  const updateCartItem = (itemId, quantity) => {
+  // Update cart item quantity or coupon status
+  const updateCartItem = (itemId, quantity, couponSelected = null) => {
     let cartData = structuredClone(cartItems);
 
-    cartData[itemId] = quantity;
+    if (!cartData[itemId]) return;
+
+    cartData[itemId].quantity = quantity;
+
+    // Update coupon if provided
+    if (couponSelected !== null) {
+      cartData[itemId].couponSelected = couponSelected;
+    }
+
+    // Remove if quantity becomes 0
+    if (cartData[itemId].quantity <= 0) {
+      delete cartData[itemId];
+    }
+
     setCartItems(cartData);
   };
 
   // Remove product from cart
   const removeFromCart = (itemId) => {
     let cartData = structuredClone(cartItems);
-
     if (cartData[itemId]) {
-      cartData[itemId] -= 1;
-      if (cartData[itemId] === 0) {
-        delete cartData[itemId];
-      }
+      cartData[itemId].quantity -= 1;
+      if (cartData[itemId].quantity <= 0) delete cartData[itemId];
     }
-
     toast.success("Removed From Cart");
     setCartItems(cartData);
   };
 
   // Get cart item count
   const getCartCount = () => {
-    let totalCount = 0;
-    for (const item in cartItems) {
-      totalCount += cartItems[item];
-    }
-    return totalCount;
+    return Object.values(cartItems).reduce((acc, item) => acc + item.quantity, 0);
   };
 
   // Get cart total amount
+  // Get cart total amount (with coupon discounts)
   const getCartAmount = () => {
     let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
-      if (cartItems[items] > 0) {
-        totalAmount += cartItems[items] * itemInfo.offerPrice;
+
+    for (const itemId in cartItems) {
+      const product = products.find(p => p._id === itemId);
+      if (!product) continue;
+
+      const quantity = cartItems[itemId]?.quantity || cartItems[itemId] || 1;
+      const couponSelected = cartItems[itemId]?.couponSelected || false;
+
+      let price = product.offerPrice;
+
+      if (couponSelected) {
+        price -= product.couponDiscount || 0; // apply coupon discount
       }
+
+      totalAmount += price * quantity;
     }
+
     return Math.floor(totalAmount * 100) / 100;
+  };
+
+  // Update cart in backend whenever cartItems change
+  useEffect(() => {
+    const updateCart = async () => {
+      try {
+        if (!user) return;
+        const { data } = await axios.post("/api/cart/update", { userId: user._id, cartItems }, { withCredentials: true });
+        if (data.success) {
+          setWalletBalance(data.walletBalance || walletBalance);
+        } else {
+          console.log(data.message);
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    updateCart();
+  }, [cartItems]);
+
+  // Apply coupon
+  const applyCoupon = async (productId) => {
+    if (!user) return toast.error("Login to apply coupon");
+
+    try {
+      const { data } = await axios.post("/api/cart/apply-coupon", {
+        userId: user._id,
+        productId
+      });
+
+      if (data.success) {
+        const product = products.find(p => p._id === productId);
+        const discount = Math.min(product.couponDiscount, walletBalance);
+
+        let cartData = structuredClone(cartItems);
+        cartData[productId] = {
+          ...cartData[productId],
+          couponSelected: true,
+          finalPrice: product.offerPrice - discount
+        };
+        setCartItems(cartData);
+        setWalletBalance(data.walletBalance);
+
+        toast.success("Coupon applied successfully!");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      console.log(err.message);
+      toast.error("Failed to apply coupon");
+    }
+  };
+
+  // Place COD Order
+  // const placeOrderCOD = async (address) => {
+  //   if (!user) return toast.error("Login to place order");
+
+  //   const items = Object.keys(cartItems).map(id => ({
+  //     product: id,
+  //     quantity: cartItems[id].quantity,
+  //     finalPrice: cartItems[id].finalPrice,
+  //     couponSelected: cartItems[id].couponSelected || false
+  //   }));
+
+  //   try {
+  //     const { data } = await axios.post("/api/order/cod", { userId: user._id, items, address });
+
+  //     if (data.success) {
+  //       toast.success("Order placed successfully!");
+  //       setCartItems({});
+  //       setWalletBalance(data.walletBalance || 0);
+  //       fetchUser(); // refresh user
+  //     } else {
+  //       toast.error(data.message);
+  //     }
+  //   } catch (err) {
+  //     console.log(err.message);
+  //     toast.error("Failed to place order");
+  //   }
+  // };
+  const placeOrderCOD = async (address) => {
+    if (!user) {
+      toast.error("Login to place order");
+      return;
+    }
+
+    // Prepare cart items for order
+    const items = Object.keys(cartItems).map(id => ({
+      product: id,
+      quantity: cartItems[id].quantity,
+      finalPrice: cartItems[id].finalPrice,
+      couponSelected: cartItems[id].couponSelected || false
+    }));
+
+    try {
+      const { data } = await axios.post("/api/order/cod", {
+        userId: user._id,
+        items,
+        address
+      });
+
+      if (data.success) {
+        toast.success("Order placed successfully!");
+
+        // Clear cart
+        setCartItems({});
+
+        // ✅ Update wallet instantly (independent of user state)
+        setWalletBalance(data.userWalletBalance || 0);
+
+        // Optional: update user object if needed
+        setUser(prev => ({ ...prev, walletBalance: data.userWalletBalance || 0 }));
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      console.log(err.message);
+      toast.error("Failed to place order");
+    }
   };
 
   useEffect(() => {
@@ -131,27 +475,6 @@ export const AppContextProvider = ({ children }) => {
     fetchSeller();
     fetchProducts();
   }, []);
-
-  // update database cart items
-  useEffect(() => {
-    const updateCart = async () => {
-      try {
-        const { data } = await axios.post(
-          "/api/cart/update",
-          { cartItems },
-          { withCredentials: true }
-        );
-        if (!data.success) {
-          console.log(data.message);
-        }
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    if (user) {
-      updateCart();
-    }
-  }, [cartItems]);
 
   const value = {
     navigate,
@@ -167,19 +490,21 @@ export const AppContextProvider = ({ children }) => {
     addToCart,
     updateCartItem,
     removeFromCart,
-    searchQuery,
     getCartCount,
     getCartAmount,
+    searchQuery,
     setSearchQuery,
     axios,
     fetchSeller,
     fetchProducts,
     setCartItems,
+    walletBalance,
+    setWalletBalance,
+    applyCoupon,
+    placeOrderCOD
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-export const useAppContext = () => {
-  return useContext(AppContext);
-};
+export const useAppContext = () => useContext(AppContext);
