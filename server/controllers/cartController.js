@@ -27,8 +27,17 @@ export const updateCart = async (req, res) => {
 
             // Calculate final price (preview only)
             let finalPrice = product.offerPrice;
+            // if (couponSelected && product.couponDiscount > 0) {
+            //     finalPrice = product.offerPrice - product.couponDiscount;
+            // }
             if (couponSelected && product.couponDiscount > 0) {
-                finalPrice = product.offerPrice - product.couponDiscount;
+                const deduction = Math.min(
+                    product.couponDiscount,
+                    user.walletBalance,
+                    product.offerPrice
+                );
+
+                finalPrice = product.offerPrice - deduction;
             }
 
             updatedCart[product._id] = {

@@ -84,26 +84,44 @@ export const AppContextProvider = ({ children }) => {
   };
 
   // Update cart item quantity or coupon status
-  const updateCartItem = (itemId, quantity, couponSelected = null) => {
-    let cartData = structuredClone(cartItems);
+  // const updateCartItem = (itemId, quantity, couponSelected = null) => {
+  //   let cartData = structuredClone(cartItems);
 
-    if (!cartData[itemId]) return;
+  //   if (!cartData[itemId]) return;
 
-    cartData[itemId].quantity = quantity;
+  //   cartData[itemId].quantity = quantity;
 
-    // Update coupon if provided
-    if (couponSelected !== null) {
-      cartData[itemId].couponSelected = couponSelected;
+  //   // Update coupon if provided
+  //   if (couponSelected !== null) {
+  //     cartData[itemId].couponSelected = couponSelected;
+  //   }
+
+  //   // Remove if quantity becomes 0
+  //   if (cartData[itemId].quantity <= 0) {
+  //     delete cartData[itemId];
+  //   }
+
+  //   setCartItems(cartData);
+  // };
+  // Accepts productId, quantity, and optional couponSelected toggle
+  const updateCartItem = (productId, quantity, couponSelected = null) => {
+    const updatedCart = { ...cartItems };
+
+    if (updatedCart[productId]) {
+      updatedCart[productId].quantity = quantity;
+
+      if (couponSelected !== null) {
+        updatedCart[productId].couponSelected = couponSelected;
+      }
+
+      // Remove item if quantity is 0
+      if (updatedCart[productId].quantity <= 0) {
+        delete updatedCart[productId];
+      }
     }
 
-    // Remove if quantity becomes 0
-    if (cartData[itemId].quantity <= 0) {
-      delete cartData[itemId];
-    }
-
-    setCartItems(cartData);
+    setCartItems(updatedCart);
   };
-
   // Remove product from cart
   const removeFromCart = (itemId) => {
     let cartData = structuredClone(cartItems);
@@ -122,23 +140,55 @@ export const AppContextProvider = ({ children }) => {
 
   // Get cart total amount
   // Get cart total amount (with coupon discounts)
+  // const getCartAmount = () => {
+  //   let totalAmount = 0;
+
+  //   for (const itemId in cartItems) {
+  //     const product = products.find(p => p._id === itemId);
+  //     if (!product) continue;
+
+  //     const quantity = cartItems[itemId]?.quantity || cartItems[itemId] || 1;
+  //     const couponSelected = cartItems[itemId]?.couponSelected || false;
+
+  //     let price = product.offerPrice;
+
+  //     if (couponSelected) {
+  //       price -= product.couponDiscount || 0; // apply coupon discount
+  //     }
+
+  //     totalAmount += price * quantity;
+  //   }
+
+  //   return Math.floor(totalAmount * 100) / 100;
+  // };
   const getCartAmount = () => {
     let totalAmount = 0;
+    let remainingWallet = walletBalance;
 
     for (const itemId in cartItems) {
       const product = products.find(p => p._id === itemId);
       if (!product) continue;
 
-      const quantity = cartItems[itemId]?.quantity || cartItems[itemId] || 1;
+      const quantity = cartItems[itemId]?.quantity || 1;
       const couponSelected = cartItems[itemId]?.couponSelected || false;
 
-      let price = product.offerPrice;
+      const basePrice = product.offerPrice || 0;
+      const couponValue = product.couponDiscount || 0;
 
-      if (couponSelected) {
-        price -= product.couponDiscount || 0; // apply coupon discount
+      let finalUnitPrice = basePrice;
+
+      if (couponSelected && remainingWallet > 0 && couponValue > 0) {
+        const maxCouponForItem = couponValue * quantity;
+        const actualDeduction = Math.min(maxCouponForItem, remainingWallet);
+
+        const perUnitDeduction = actualDeduction / quantity;
+
+        finalUnitPrice = basePrice - perUnitDeduction;
+
+        remainingWallet -= actualDeduction;
       }
 
-      totalAmount += price * quantity;
+      totalAmount += finalUnitPrice * quantity;
     }
 
     return Math.floor(totalAmount * 100) / 100;
@@ -196,13 +246,104 @@ export const AppContextProvider = ({ children }) => {
   };
 
 
+  // const placeOrderCOD = async (address) => {
+  //   if (!user) {
+  //     toast.error("Login to place order");
+  //     return;
+  //   }
+
+  //   // Prepare cart items for order
+  //   const items = Object.keys(cartItems).map(id => ({
+  //     product: id,
+  //     quantity: cartItems[id].quantity,
+  //     finalPrice: cartItems[id].finalPrice,
+  //     couponSelected: cartItems[id].couponSelected || false
+  //   }));
+
+  //   try {
+  //     const { data } = await axios.post("/api/order/cod", {
+  //       userId: user._id,
+  //       items,
+  //       address
+  //     });
+
+  //     if (data.success) {
+  //       toast.success("Order placed successfully!");
+
+  //       // Clear cart
+  //       setCartItems({});
+
+  //       // ✅ Update wallet instantly (independent of user state)
+  //       setWalletBalance(data.userWalletBalance || 0);
+
+  //       // Optional: update user object if needed
+  //       setUser(prev => ({ ...prev, walletBalance: data.userWalletBalance || 0 }));
+  //     } else {
+  //       toast.error(data.message);
+  //     }
+  //   } catch (err) {
+  //     console.log(err.message);
+  //     toast.error("Failed to place order");
+  //   }
+  // };
+  // const placeOrderCOD = async (address) => {
+  //   if (!user) return toast.error("Login to place order");
+
+  //   // Prepare cart items for order with actual finalPrice
+  //   const items = Object.keys(cartItems).map(id => {
+  //     const product = products.find(p => p._id === id);
+  //     if (!product) return null;
+
+  //     const quantity = cartItems[id].quantity || 1;
+  //     const couponSelected = cartItems[id].couponSelected || false;
+  //     const couponValue = couponSelected ? Math.min(product.couponDiscount, walletBalance) : 0;
+
+  //     // Final price per unit after wallet/coupon deduction
+  //     const finalPrice = product.offerPrice - couponValue;
+
+  //     return {
+  //       product: id,
+  //       quantity,
+  //       finalPrice,
+  //       couponSelected
+  //     };
+  //   }).filter(Boolean);
+
+  //   try {
+  //     const { data } = await axios.post("/api/order/cod", {
+  //       userId: user._id,
+  //       items,
+  //       address
+  //     });
+
+  //     if (data.success) {
+  //       toast.success("Order placed successfully!");
+
+  //       // Clear cart
+  //       setCartItems({});
+
+  //       // Update wallet instantly
+  //       setWalletBalance(data.userWalletBalance || 0);
+
+  //       // Update user object
+  //       setUser(prev => ({ ...prev, walletBalance: data.userWalletBalance || 0 }));
+
+  //       // Optional: refresh orders list if MyOrders page is mounted
+  //       await syncUser();
+  //     } else {
+  //       toast.error(data.message);
+  //     }
+  //   } catch (err) {
+  //     console.log(err.message);
+  //     toast.error("Failed to place order");
+  //   }
+  // };
   const placeOrderCOD = async (address) => {
     if (!user) {
       toast.error("Login to place order");
       return;
     }
 
-    // Prepare cart items for order
     const items = Object.keys(cartItems).map(id => ({
       product: id,
       quantity: cartItems[id].quantity,
@@ -220,19 +361,23 @@ export const AppContextProvider = ({ children }) => {
       if (data.success) {
         toast.success("Order placed successfully!");
 
-        // Clear cart
+        // Clear cart locally
         setCartItems({});
 
-        // ✅ Update wallet instantly (independent of user state)
-        setWalletBalance(data.userWalletBalance || 0);
+        // Optional: clear search query if any
+        setSearchQuery({});
 
-        // Optional: update user object if needed
-        setUser(prev => ({ ...prev, walletBalance: data.userWalletBalance || 0 }));
+        // ✅ Navigate to MyOrders page after placing order
+        // This will refresh the page and fetch wallet from backend
+        navigate("/my-orders");
+
+        // If you want to force reload to make sure wallet is synced:
+        window.location.reload();
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to place order");
       }
     } catch (err) {
-      console.log(err.message);
+      console.error("Place COD order error:", err.message);
       toast.error("Failed to place order");
     }
   };
@@ -277,7 +422,8 @@ export const AppContextProvider = ({ children }) => {
     fetchUser();
     fetchSeller();
     fetchProducts();
-    fetchDispatcher()
+    fetchDispatcher();
+    syncUser()
   }, []);
 
   const value = {
