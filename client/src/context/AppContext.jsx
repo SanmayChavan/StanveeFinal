@@ -470,10 +470,31 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+
+  // dispatcher
+  // 1. Add Dispatcher State
+  const [isDispatcher, setIsDispatcher] = useState(false);
+  // 2. Add Dispatcher Auth Check Function
+  // Inside AppContext.jsx
+  const fetchDispatcher = async () => {
+    try {
+      // Added /api prefix to match your backend router
+      const { data } = await axios.get("/api/dispatcher/auth");
+      if (data.success) {
+        setIsDispatcher(true);
+      }
+    } catch (error) {
+      setIsDispatcher(false);
+    }
+  };
+
+
+
   useEffect(() => {
     fetchUser();
     fetchSeller();
     fetchProducts();
+    fetchDispatcher()
   }, []);
 
   const value = {
@@ -501,7 +522,13 @@ export const AppContextProvider = ({ children }) => {
     walletBalance,
     setWalletBalance,
     applyCoupon,
-    placeOrderCOD
+    placeOrderCOD,
+
+
+    // dispatcher
+    isDispatcher,       // <--- Added to value
+    setIsDispatcher,    // <--- Added to value
+    fetchDispatcher,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

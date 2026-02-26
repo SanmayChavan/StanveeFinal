@@ -1165,3 +1165,90 @@ export const getAllOrder = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+
+
+
+
+
+// export const updateOrderStatus = async (req, res) => {
+
+//   try {
+//     const { orderId, status } = req.body;
+
+//     if (!orderId || !status) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "orderId and status are required",
+//       });
+//     }
+
+//     // Validate orderId
+//     if (!mongoose.Types.ObjectId.isValid(orderId)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid orderId",
+//       });
+//     }
+
+//     // Update order
+//     const order = await Order.findByIdAndUpdate(
+//       orderId,
+//       { status },
+//       { new: true }
+//     );
+
+//     if (!order) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Order not found",
+//       });
+//     }
+
+//     res.json({
+//       success: true,
+//       message: `Order status updated to ${status}`,
+//       order,
+//     });
+//   } catch (err) {
+//     console.error("❌ updateOrderStatus error:", err.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    if (!orderId || !status) {
+      return res.status(400).json({ success: false, message: "orderId and status are required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ success: false, message: "Invalid orderId" });
+    }
+
+    // Update the order
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    ).populate("items.product").populate("userId", "name email");
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    res.json({
+      success: true,
+      message: `Order status updated to ${status}`,
+      order,
+    });
+
+  } catch (err) {
+    console.error("❌ updateOrderStatus error:", err.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};

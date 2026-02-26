@@ -11,8 +11,9 @@ import cartRouter from './routes/cartRoute.js';
 import addressRouter from './routes/addressRoute.js';
 import orderRouter from './routes/orderRoute.js';
 
-import dispatcherRouter from './routes/dispatcherRoute.js';
+
 import { stripeWebhooks } from './controllers/orderController.js';
+import dispatcherRouter from './routes/dispatcherRoute.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -57,7 +58,7 @@ app.use('/api/order', orderRouter);
 
 
 // ... other middleware
-app.use('/dispatcher', dispatcherRouter);
+app.use('/api/dispatcher', dispatcherRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on https://localhost:${port}`)
