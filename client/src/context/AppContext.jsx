@@ -402,33 +402,7 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  // Place COD Order
-  // const placeOrderCOD = async (address) => {
-  //   if (!user) return toast.error("Login to place order");
 
-  //   const items = Object.keys(cartItems).map(id => ({
-  //     product: id,
-  //     quantity: cartItems[id].quantity,
-  //     finalPrice: cartItems[id].finalPrice,
-  //     couponSelected: cartItems[id].couponSelected || false
-  //   }));
-
-  //   try {
-  //     const { data } = await axios.post("/api/order/cod", { userId: user._id, items, address });
-
-  //     if (data.success) {
-  //       toast.success("Order placed successfully!");
-  //       setCartItems({});
-  //       setWalletBalance(data.walletBalance || 0);
-  //       fetchUser(); // refresh user
-  //     } else {
-  //       toast.error(data.message);
-  //     }
-  //   } catch (err) {
-  //     console.log(err.message);
-  //     toast.error("Failed to place order");
-  //   }
-  // };
   const placeOrderCOD = async (address) => {
     if (!user) {
       toast.error("Login to place order");
@@ -488,6 +462,22 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+  // inside AppContextProvider
+  const syncUser = async () => {
+    try {
+      const payload = user?._id ? { userId: user._id } : {};
+      const { data } = await axios.post("/api/user/is-auth", payload, { withCredentials: true });
+
+      if (data.success) {
+        setUser(data.user);                          // Full user object
+        setCartItems(data.user.cartItems || {});     // Cart items
+        setWalletBalance(data.user.walletBalance || 0); // Wallet
+      }
+    } catch (err) {
+      console.log("Auth error:", err.message);
+    }
+  };
+
 
 
   useEffect(() => {
@@ -529,6 +519,8 @@ export const AppContextProvider = ({ children }) => {
     isDispatcher,       // <--- Added to value
     setIsDispatcher,    // <--- Added to value
     fetchDispatcher,
+
+    syncUser
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
