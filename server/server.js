@@ -10,6 +10,7 @@ import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import addressRouter from './routes/addressRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import walletRoutes from './routes/walletRoute.js'
 
 
 import { stripeWebhooks } from './controllers/orderController.js';
@@ -56,7 +57,7 @@ app.use('/api/address', addressRouter);
 app.use('/api/order', orderRouter);
 
 
-
+app.use("/api/wallet", walletRoutes);
 // ... other middleware
 app.use('/api/dispatcher', dispatcherRouter);
 
