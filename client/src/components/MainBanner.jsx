@@ -8,7 +8,7 @@ const services = [
   { imgSrc: assets.freeshipping, title: "Free Shipping", text: "Free shipping on all order" },
   { imgSrc: assets.onlinesupport, title: "Online Support", text: "10:30 AM to 5:30 PM • Monday to Saturday" },
   { imgSrc: assets.securitypayment, title: "Secure Payment", text: "We Value Your Security" },
-  { imgSrc: assets.newmemberdiscount, title: "New Member Discount", text: "Code NEW15 get 15% OFF on First Order" },
+  { imgSrc: assets.newmemberdiscount, title: "New Member Discount", text: "Get 5000 shopping points" },
 ]
 
 const categoryBanners = [
