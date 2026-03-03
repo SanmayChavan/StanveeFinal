@@ -213,7 +213,7 @@ export const footerLinks = [
     links: [
       { text: "Royal Package", url: "https://stanvee.com/index.asp" },
       { text: "Full Tank Card", url: "https://fulltank.stanvee.com/" },
-      { text: "Wow Discount", url: "#" },
+      { text: "Wow Discount", url: "https://wow.stanvee.com/" },
       { text: "Stanvee Rento", url: "#" },
 
     ],
