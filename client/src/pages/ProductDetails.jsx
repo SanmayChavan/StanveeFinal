@@ -412,7 +412,7 @@ const ProductDetails = () => {
                   Offer Price: {currency}{product.offerPrice}
                 </p>
                 <p className="text-2xl font-medium mt-1">
-                  Final Price: {currency}{finalPrice}
+                  Member Price: {currency}{finalPrice}
                 </p>
 
                 {walletDeduction > 0 && (
