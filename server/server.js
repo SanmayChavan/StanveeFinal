@@ -25,7 +25,7 @@ const port = process.env.PORT || 4000;
 const allowedOrigins = [
     'https://stanveeproducts.vercel.app',
     'http://localhost:5173',
-   ' https://shop.stanvee.com'
+    'https://shop.stanvee.com'
 ];
 
 
